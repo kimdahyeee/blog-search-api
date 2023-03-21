@@ -1,0 +1,5 @@
+dependencies {
+    runtimeOnly 'com.h2database:h2'
+
+    implementation group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+}

@@ -1,0 +1,34 @@
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+        default_batch_fetch_size: 100
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    username: root
+    password:
+    driver-class-name: org.h2.Driver
+    schema: classpath*:db/schema.sql
+  redis:
+    host: 127.0.0.1
+    port: 1120
+  h2:
+    console:
+      enabled: true
+
+infra:
+  kakao:
+    rest-api-key:
+      id: KakaoAK
+      key: 302ced323ddac1cc15a947e2cf83e3c3
+    search-blog:
+      url: https://dapi.kakao.com
+      uri: /v2/search/blog
+
+logging:
+  level:
+    root: info

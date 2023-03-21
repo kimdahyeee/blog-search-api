@@ -1,0 +1,2 @@
+GET https://dapi.kakao.com/v2/search/blog?query=댕댕이 고영희&page=1
+Authorization: KakaoAK 302ced323ddac1cc15a947e2cf83e3c3

@@ -11,8 +11,12 @@ import org.springframework.data.redis.core.RedisHash;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+/**
+ * redis - hash 자료 구조 사용 (key - value 구조로 데이터 저장)
+ */
 @Getter
 @Setter
+// redis 에 30 초간 저장한다. redis 는 기본적으로 lazy deletion 을 사용한다. 요청하는 시점에 만료시간이 지났으면 삭제
 @RedisHash(value = "topKeywordBlog", timeToLive = 30)
 @NoArgsConstructor
 @AllArgsConstructor

@@ -59,12 +59,15 @@ public class ApiCallClient {
     protected <T> T get(final ParameterizedTypeReference<T> elementTypeRef, final String uri) throws HttpRequestException {
         return webClient.get()
                 .uri(uri)
-                .retrieve()
+                .retrieve() // body 를 받아 디코딩하는 메소드
                 .onStatus(HttpStatus::isError, get5xxErrorHandlingMono(uri))
                 .bodyToMono(elementTypeRef)
                 .block();
     }
 
+    /**
+     * ~/item/{itemNo} 이런식으로 처리 가능
+     */
     protected <T> T get(final Class<T> clazz, final String uri, Object... uriVariables) throws HttpRequestException {
         return webClient.get()
                 .uri(uri, uriVariables)
@@ -74,6 +77,9 @@ public class ApiCallClient {
                 .block();
     }
 
+    /**
+     * block() 대신 subscribe() 를 사용하면 non-blocking 으로 처리할 수 있음
+     */
     protected <T> T get(final Class<T> clazz, final String uri, MultiValueMap<String, String> queryParams) throws HttpRequestException, RetryException {
         String requestUri = UriComponentsBuilder.fromUriString(uri)
                 .queryParams(queryParams)
@@ -82,13 +88,15 @@ public class ApiCallClient {
 
         return webClient.get()
                 .uri(requestUri)
-                .retrieve()
+                .retrieve() // body 를 디코딩
                 .onStatus(HttpStatus::is4xxClientError, get4xxErrorHandlingMono(requestUri))
                 .onStatus(HttpStatus::is5xxServerError, get5xxErrorHandlingMono(requestUri))
-                .bodyToMono(clazz)
-                .block();
+                .bodyToMono(clazz) // mono 는 0, 1개의 응답을 다룸 . flux 는 0 - N 개
+                .block(); // 동기적 처리
     }
 
+    // @Retryable 어노테이션으로 대체
+    @Deprecated
     protected <T> T callApi(final Class<T> clazz, final String uri, MultiValueMap<String, String> queryParams) throws HttpRequestException, RetryException {
         String requestUri = UriComponentsBuilder.fromUriString(uri)
                 .queryParams(queryParams)
@@ -105,7 +113,8 @@ public class ApiCallClient {
                 .orElseThrow(() -> new HttpRequestException(KvData.of("uri", uri)));
     }
 
-
+    // @Retryable 어노테이션으로 대체
+    @Deprecated
     private <T> Optional<T> callByOnce(final Class<T> clazz, final String uri, final int retryCount, int attempt) throws HttpRequestException, RetryException {
         try {
             return Optional.ofNullable(webClient.get()

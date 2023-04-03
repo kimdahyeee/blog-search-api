@@ -23,17 +23,22 @@ public class BlogSearchService {
     /**
      * 블로그 검색 결과 반환 메소드
      * - 캐시 값이 있는 경우 api 요청을 하지 않는다.
+     * - 외부 api 를 통해 결과를 얻은 경우 top 10 이라면 캐싱 처리
      */
     public BlogSearchResponse fetchBlogs(BlogSearchRequest blogSearchRequest) {
-        return cachingTopKeywordResults(blogSearchRequest)
+        return fetchCachingTopKeywordResults(blogSearchRequest)
                 .map(TopKeywordBlog::getBlogSearchResponse)
                 .orElseGet(() -> {
                     BlogSearchResponse blogSearchResponse = blogSearchClientService.fetchBlogs(blogSearchRequest);
                     keywordService.saveBySearch(blogSearchRequest.getKeyword());
-                    topKeywordBlogRepository.save(TopKeywordBlog.of(blogSearchRequest.getKeyword(), blogSearchResponse));
+                    cachingTopKeywordResults(blogSearchRequest, blogSearchResponse);
 
                     return blogSearchResponse;
                 });
+    }
+
+    private Optional<TopKeywordBlog> fetchCachingTopKeywordResults(BlogSearchRequest blogSearchRequest) {
+        return topKeywordBlogRepository.findById(blogSearchRequest.getKeyword());
     }
 
     /**
@@ -41,15 +46,13 @@ public class BlogSearchService {
      * - 인기 검색어인 경우
      * - 첫 페이지인 경우
      */
-    private Optional<TopKeywordBlog> cachingTopKeywordResults(BlogSearchRequest blogSearchRequest) {
+    private void cachingTopKeywordResults(BlogSearchRequest blogSearchRequest, BlogSearchResponse blogSearchResponse) {
         try {
             if (blogSearchRequest.isFirstPage() && keywordService.containCacheWith(blogSearchRequest.getKeyword())) {
-                return topKeywordBlogRepository.findById(blogSearchRequest.getKeyword());
+                topKeywordBlogRepository.save(TopKeywordBlog.of(blogSearchRequest.getKeyword(), blogSearchResponse));
             }
         } catch (RuntimeException e) {
-            log.error(message("cache fetch error"), e);
+            log.error(message("cache save error"), e);
         }
-
-        return Optional.empty();
     }
 }

@@ -24,6 +24,11 @@ public class BlogSearchController {
 
     /**
      * 블로그 검색 API
+     * - 블로그 검색 외부 api 호출
+     * - 캐싱된 값이 있다면, 캐싱된 값을 return
+     * - top 10 키워드인 경우 검색 결과 캐싱 처리 (top 10 인 경우 트래픽이 더 많을 것으로 예상)
+     * - 검색 요청이 있는 경우, 카운트를 저장하기 위해 DB, redis 모두에 저장.
+     * -- DB 는 영구적 보관을 위함, redis 는 조회 성능을 위함
      */
     @GetMapping
     public OkResponse<BlogSearchResponse> fetchBlogInfos(@RequestParam String keyword,

@@ -13,10 +13,7 @@ import org.springframework.data.redis.core.ZSetOperations;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static com.search.blog.core.logger.KbLogger.message;
 
@@ -44,6 +41,10 @@ public class KeywordService {
         this.countingByRequest(keyword);
     }
 
+    /**
+     * `redisTemplate.opsForZSet()` SortedSet 자료구조 사용 - score 을 가지고 있기 때문에, 순위라는 개념을 적용하기에 적절
+     * - 그에 맞는 range 메소드도 제공하고 있음
+     */
     private void countingByRequest(String keyword) {
         redisTemplate.opsForZSet().incrementScore(CacheKey.KEYWORDS_SET, keyword, COUNT_OF_ONE_REQUEST);
     }

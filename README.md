@@ -96,7 +96,7 @@ GET http://localhost:11002/api/v1/search/blog/keywords HTTP/1.1
 | --- | --- | --- | --- |
 | topKeywords | Array | 인기 검색어 목록 | O |
 | - keyword | String | 검색어 | X |
-| - count | Integer | 검색 횟수 | O |
+| - count | Integer | 검색 횟수 | X |
 
 ### 4. [공통] 요청 실패 시 응답
 
@@ -148,3 +148,6 @@ http://localhost:11002/api/v1/search/blog/keywords
 ```
 
 ## 빌드 결과물 링크
+```
+search-blog-api/build-result/blog-api-1.0.0-SNAPSHOT.jar
+```

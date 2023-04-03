@@ -11,7 +11,13 @@ import java.util.Optional;
 
 public interface BlogKeywordRepository extends BaseBlogKeywordRepository {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    /**
+     * 동시성 이슈 고려 (1)
+     *
+     * Lock 어노테이션도 aop 를 통해 동작한다.
+     * - default lockModeType 이 PESSIMISTIC_WRITE 이다.
+     */
+    @Lock(value = LockModeType.PESSIMISTIC_WRITE)
     @QueryHints({
             @QueryHint(name = "javax.persistence.lock.timeout", value = "3000")
     })

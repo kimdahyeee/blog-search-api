@@ -7,9 +7,14 @@ import org.hibernate.cache.CacheException;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * cacheManager 별도로 구현한 이유 ?
+ * - 처음에는 간단하게 @Cacheable 캐싱 처리하려고 했는데, top 10 키워드를 직접 (직관적으로) 제어하기 위해 변경 ..!
+ */
 @Repository
 @RequiredArgsConstructor
 public class TopKeywordRepository {
@@ -28,7 +33,15 @@ public class TopKeywordRepository {
     }
 
     public List<TopKeyword> findAll() {
-        return redisTemplate.opsForList().range(CacheKey.TOP_KEYWORDS, 0, redisTemplate.opsForList().size(CacheKey.TOP_KEYWORDS));
+        // refactor. size 가 null 일 수 있으니, null-safe 하게 변경
+        Long size = redisTemplate.opsForList().size(CacheKey.TOP_KEYWORDS);
+        List<TopKeyword> topKeywords = new ArrayList<>();
+
+        if (size != null && size > 0) {
+            topKeywords = redisTemplate.opsForList().range(CacheKey.TOP_KEYWORDS, 0, size);
+        }
+
+        return topKeywords;
     }
 
     public void delete() {

@@ -12,7 +12,12 @@ import lombok.ToString;
 public class OkResponse<T> {
 
     private String message;
+    /**
+     * data parameter 로 한번 더 감싸주는 이유는, 데이터가 있건 없건 okResponse 의 전체적인 구조를 깨지 않기 위함
+     * -> 클라이언트에서 일관적인 응답 처리를 할 수 있는 장점 !
+     */
     private T data;
+    @Deprecated
     private PageInfo page;
 
     private OkResponse(String message, T data) {

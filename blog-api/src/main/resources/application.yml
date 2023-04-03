@@ -21,7 +21,7 @@ spring:
 #    initialization-mode: embedded
   redis:
     host: 127.0.0.1
-    port: 1119
+    port: 6379
   h2:
     console:
       enabled: true

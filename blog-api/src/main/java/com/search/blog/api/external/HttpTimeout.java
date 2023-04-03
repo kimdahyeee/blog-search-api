@@ -7,6 +7,9 @@ import lombok.ToString;
 
 import static lombok.AccessLevel.PRIVATE;
 
+/**
+ * http api time out 관련 설정
+ */
 @Getter
 @ToString
 public class HttpTimeout {
